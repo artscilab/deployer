@@ -1,14 +1,18 @@
 const express = require("express")
 const node_ssh = require("node-ssh")
 const body_parser = require("body-parser")
-const projects = require("./config")
+const morgan = require("morgan")
 
 const app = express();
+const logger = morgan('dev');
 
 app.use(body_parser.json())
+app.use(logger);
 
 app.get("/", (req, res) => {
-  res.json(projects)
+  const projects = require("./config")
+  res.status(200).json(projects)
+  return
 })
 
 app.post("/webhook", async (req, res) => {
