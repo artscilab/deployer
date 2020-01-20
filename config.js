@@ -12,6 +12,12 @@ const projects = {
     master: {
       deploy_path: "/var/www/cdash.atec.io/html/wp_content/themes/cdash"
     }
+  },
+  "artscilab": {
+    master: {
+      deploy_path: "/home/al/artscilab",
+      commands: ["pm2 restart"]
+    }
   }
 }
 

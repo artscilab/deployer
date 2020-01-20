@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
   res.json(projects)
 })
 
-app.post("/webhooks", async (req, res) => {
+app.post("/webhook", async (req, res) => {
   res.json({
     "message": "success"
   })
