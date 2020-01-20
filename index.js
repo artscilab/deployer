@@ -26,6 +26,13 @@ app.post("/webhook", async (req, res) => {
     return
   }
 
+  if (!ref) {
+    res.status(200).json({
+      "message": "ref not present"
+    })
+    return;
+  }
+  
   const branchName = ref.split("/").pop();
   const branchConfig = configuration[branchName];
   if (!branchConfig) {
