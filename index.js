@@ -12,6 +12,36 @@ app.get("/", (req, res) => {
 })
 
 app.post("/webhook", async (req, res) => {
+  const { ref, repository: { name } } = req.body;
+  const configuration = require("./config")[name]
+
+  if (!configuration) {
+    res.status(404).json({
+      "message": `configuration for "${name}" not found`
+    })
+    return
+  }
+
+  const branchName = ref.split("/").pop();
+  const branchConfig = configuration[branchName];
+  if (!branchConfig) {
+    res.status(200).json({
+      "message": `configuration for branch "${branchName}" not found`
+    })
+    return
+  }
+  
+  const { deployPath } = branchConfig;
+  if (!deployPath) {
+    res.status(200).json({
+      "message": `invalid configuration for branch "${branchName}"`
+    })
+    return;
+  }
+
+  const ssh = new node_ssh();
+  // TODO: connect to server and clone the repo. 
+
   res.json({
     "message": "success"
   })
