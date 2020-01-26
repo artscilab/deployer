@@ -1,3 +1,8 @@
+// config.js
+
+// This file holds the configuration for our projects, and aims to be useful in two regards: 
+//  1. Allowing us to manage deploy locations with git-based histories and collaboration
+//  2. Serve as documentation for where everything is on our server and how they are running
 
 const projects = {
   "creativedisturbance": {
