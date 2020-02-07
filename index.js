@@ -17,7 +17,10 @@ app.get("/", (req, res) => {
 })
 
 app.post("/webhook", async (req, res) => {
-  const { ref, repository: { name, clone_url} } = req.body;
+  const { ref, repository } = req.body;
+  const { name } = repository;
+  const ownerName = repository.owner.name;
+
   const configuration = require("./config")[name]
 
   // load configuration from config.js and check that 
@@ -34,6 +37,18 @@ app.post("/webhook", async (req, res) => {
   if (!ref) {
     res.status(200).json({
       "message": "ref not present"
+    })
+    return;
+  }
+  if (!name) {
+    res.status(200).json({
+      "message": "repository name not present"
+    })
+    return;
+  }
+  if (!ownerName) {
+    res.status(200).json({
+      "message": "owner name not present"
     })
     return;
   }
@@ -63,9 +78,16 @@ app.post("/webhook", async (req, res) => {
     return;
   }
 
+  
   const ssh = new node_ssh();
   // connect to the server using the SSH client and private key 
   // from the environment variable. 
+  // If deployMode == "git", it will use "git pull" command 
+  // to bring in the latest changes
+  // if deployMode is "manual" or unset, it will use 
+  // github api to copy files. 
+  const { deployMode = "manual" } = branchConfig;
+
   try {
     await ssh.connect({
       host: "atec.io",
@@ -80,22 +102,46 @@ app.post("/webhook", async (req, res) => {
     return
   }
 
-  // run the "git pull" command to bring in the latest changes
-  // meaning the deployPath must already be a github repo
-  // note: in the future this will be a configurable
-  // option with mode:git or mode:file, the latter of which 
-  // will manually upload the files from the repo to the deploy path,
-  // which allows the user to not depend on git locally on the server. 
-  try {
-    const cloneCommand = `git pull`;
-    console.log(`running ${cloneCommand} in ${deployPath}`);
-    await ssh.execCommand(cloneCommand, {
-      cwd: deployPath
-    })
-  } catch(e) {
-    console.log(`Error on deploy: ${e}`)
+  if (deployMode === "manual") {
+    // remove all existing files in the directory and 
+    // download it fresh from github. Use to remove reliance 
+    // on git on the server in the deployPath. 
+    try {
+      const downloadUrl = `https://github.com/${ownerName}/${name}/archive/${branchName}.tar.gz`
+      const downloadCommand = `rm -r *; curl -SL ${downloadUrl} -o repo.tar.gz && tar xvzf repo.tar.gz --strip-components=1 && rm repo.tar.gz`;
+
+      console.log(`running download command: ${downloadCommand}`)
+      await ssh.execCommand(downloadCommand, {
+        cwd: deployPath
+      })
+    } catch(e) {
+      console.log(`Error on deploy: ${e}`)
+      res.status(500).json({
+        "message": "error running git pull"
+      })
+      return 
+    }
+  }
+  else if (deployMode === "git") {
+    // run the "git pull" command to bring in the latest changes
+    // meaning the deployPath must already be a github repo
+    try {
+      const cloneCommand = `git pull`;
+      console.log(`running ${cloneCommand} in ${deployPath}`);
+      await ssh.execCommand(cloneCommand, {
+        cwd: deployPath
+      })
+    } catch(e) {
+      console.log(`Error on deploy: ${e}`)
+      res.status(500).json({
+        "message": "error running git pull"
+      })
+      return 
+    }
+  }
+  else {
     res.status(500).json({
-      "message": "error running git pull"
+      "message": "Invalid deployMode"
     })
     return 
   }
