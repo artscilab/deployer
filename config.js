@@ -32,7 +32,7 @@ const projects = {
   },
   "cdash": {
     master: {
-      deployPath: "/var/www/cdash.atec.io/html/wp-content/themes/cdash"
+      deployPath: "/var/www/atec.io/html/wp-content/themes/cdash"
     }
   },
   "artscilab": {
