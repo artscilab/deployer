@@ -39,9 +39,20 @@ const projects = {
     master: {
       deployPath: "/home/al/artscilab",
       deployMode: "git",
+    }
+  },
+  "ablb-backend": {
+    master: {
+      deployePath: "/home/al/ablb-backend",
+      deployMode: "git",
+    }
+  },
+  "ablb-app": {
+    master: {
+      deployPath: "/home/al/ablb-backend/client",
+      deployMode: "git",
       commands: {
-        pre: ["pm2 stop artsci"],
-        post: ["pm2 start artsci"]
+        post: ["yarn build"]
       }
     }
   }

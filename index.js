@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
   return
 })
 
-app.post("/webhook", async (req, res) => {
+app.post("/webhook", async (req, res, next) => {
   const { ref, repository } = req.body;
   const { name } = repository;
   const ownerName = repository.owner.name;
@@ -146,8 +146,41 @@ app.post("/webhook", async (req, res) => {
     return 
   }
 
+  const successMessage = `successfully deployed ${name}:${branchName} to ${deployPath}`
+
+  // Run all post-deploy commands from config
+  const { commands } = branchConfig;
+  if (commands === undefined) {
+    return res.json({
+      "message": successMessage
+    })
+  }
+  
+  const { post } = commands;
+  if (post === undefined) {
+    return res.json({
+      "message": successMessage
+    })
+  }
+  
+  if (!Array.isArray(post)) {
+    return res.json({
+      "message": "Post deploy commands must be an array. Skipping"
+    })
+  }
+
+  for (const command of post) {
+    try {
+      await ssh.execCommand(command, {
+        cwd: deployPath
+      })
+    } catch (e) {
+      console.error(`Failed running command: ${command}`, e)
+    }
+  }
+
   res.json({
-    "message": `successfully deployed ${name}:${branchName} to ${deployPath}`
+    "message": successMessage
   })
 })
 
