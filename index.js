@@ -170,6 +170,7 @@ app.post("/webhook", async (req, res, next) => {
   }
 
   for (const command of post) {
+    console.log(`Running post deploy command ${command}`)
     try {
       await ssh.execCommand(command, {
         cwd: deployPath
