@@ -168,7 +168,7 @@ app.post("/webhook", async (req, res, next) => {
   ssh.execCommand(command, {
     cwd: deployPath
   }).then((e) => {
-    console.log("Successfully ran post deploy message")
+    console.log(`Successfully ran post deploy command '${command}'`)
   }).catch((e) => {
     console.error(`Failed running command: ${command}`, e)
   })
