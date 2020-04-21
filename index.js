@@ -156,28 +156,20 @@ app.post("/webhook", async (req, res, next) => {
     })
   }
   
-  const { post } = commands;
-  if (post === undefined) {
+  const { post: command } = commands;
+  if (command === undefined) {
     return res.json({
       "message": successMessage
     })
   }
-  
-  if (!Array.isArray(post)) {
-    return res.json({
-      "message": "Post deploy commands must be an array. Skipping"
-    })
-  }
 
-  for (const command of post) {
-    console.log(`Running post deploy command ${command}`)
-    try {
-      await ssh.execCommand(command, {
-        cwd: deployPath
-      })
-    } catch (e) {
-      console.error(`Failed running command: ${command}`, e)
-    }
+  console.log(`Running post deploy command ${command}`)
+  try {
+    await ssh.execCommand(command, {
+      cwd: deployPath
+    })
+  } catch (e) {
+    console.error(`Failed running command: ${command}`, e)
   }
 
   res.json({

@@ -52,7 +52,7 @@ const projects = {
       deployPath: "/home/al/ablb-backend/client",
       deployMode: "git",
       commands: {
-        post: ["yarn build"]
+        post: "yarn build"
       }
     }
   }
