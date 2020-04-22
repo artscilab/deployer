@@ -43,7 +43,7 @@ const projects = {
   },
   "ablb-backend": {
     master: {
-      deployePath: "/home/al/ablb-backend",
+      deployPath: "/home/al/ablb-backend",
       deployMode: "git",
     }
   },
