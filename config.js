@@ -35,6 +35,12 @@ const projects = {
       deployPath: "/var/www/atec.io/html/wp-content/themes/cdash"
     }
   },
+  "lab-docs": {
+    master: {
+      deployPath: "/var/www/manage.atec.io/html/",
+      deployMode: "git"
+    }
+  },
   "artscilab": {
     master: {
       deployPath: "/home/al/artscilab",
