@@ -23,6 +23,13 @@ app.post("/webhook", async (req, res, next) => {
 
   const configuration = require("./config")[name]
 
+  if (!ownerName) {
+    res.status(200).json({
+      "message": "respository not present"
+    })
+    return;
+  }
+
   // load configuration from config.js and check that 
   // a config exists for this repository. If the repository 
   // name is 'artscilab' then the 'artscilab' key must be present
