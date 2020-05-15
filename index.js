@@ -18,17 +18,19 @@ app.get("/", (req, res) => {
 
 app.post("/webhook", async (req, res, next) => {
   const { ref, repository } = req.body;
-  const { name } = repository;
-  const ownerName = repository.owner.name;
-
-  const configuration = require("./config")[name]
-
-  if (!ownerName) {
+  
+  if (!repository) {
     res.status(200).json({
       "message": "respository not present"
     })
     return;
   }
+  
+  const { name } = repository;
+  const ownerName = repository.owner.name;
+
+  const configuration = require("./config")[name]
+
 
   // load configuration from config.js and check that 
   // a config exists for this repository. If the repository 
