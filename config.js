@@ -19,7 +19,7 @@
 // Coming soon: you can optionally define an object "commands" of 
 // pre- and post-deploy commands to be run in sequence in the deployPath.
 // It's currently defined for the artscilab project but doesn't get run.
-//Just a try.
+
 const projects = {
   "creativedisturbance": {
     dev: {
